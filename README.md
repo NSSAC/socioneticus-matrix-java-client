@@ -2,7 +2,8 @@
 
 ## Installation instructions for the Matrix
 
-It is recommended that you install this package within a virtual environment created with conda.
+It is recommended that you install Matrix
+within a virtual environment created with conda.
 
 ### Creating and activating a conda environment
 
@@ -51,11 +52,12 @@ $ matrix --help
 
 ### Download and Compile the Java BluePill sim
 
-The compiliation instructions depend of having Maven availble on your system.
-Maven download and install instructions are available here:
-https://maven.apache.org/index.html
-Once Maven is installed clone the repo and compile with dependencies using
-the following commands:
+The compiliation instructions depend on having
+Java and Maven availble on your system.
+The code has been tested with OpenJDK 13.
+Once Java and Maven are installed,
+clone the client code repo
+and compile using the following commands:
 
 ```
 $ git clone https://github.com/NSSAC/socioneticus-matrix-java-client
@@ -72,7 +74,7 @@ $ ls -l target/matrix_client-1.0-SNAPSHOT-jar-with-dependencies.jar
 Test the jar package with the following command:
 
 ```
-java -jar target/matrix_client-1.0-SNAPSHOT-jar-with-dependencies.jar -help
+$ java -jar target/matrix_client-1.0-SNAPSHOT-jar-with-dependencies.jar -help
 ```
 
 ## Testing Matrix: Simple Setup - Two BluePill agent threads on localhost
@@ -150,7 +152,7 @@ $ matrix controller -c ~/matrixsim/matrix.yaml -n node1
 Open a *new terminal window* and execute the following commands:
 
 ```
-java -jar target/matrix_client-1.0-SNAPSHOT-jar-with-dependencies.jar -m 2 -h localhost -p 16001
+$ java -jar target/matrix_client-1.0-SNAPSHOT-jar-with-dependencies.jar -m 2 -h localhost -p 16001
 ```
 
 ### Step 6: Cleanup
