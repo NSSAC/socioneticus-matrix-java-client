@@ -13,13 +13,13 @@ import java.util.logging.Logger;
  */
 public class BluePillAgentThread implements Runnable {
     private static final Logger LOG = Logger.getLogger(BluePillAgentThread.class.getName());
-    
+
     public int agentproc_id = -1;
     public RPCProxy proxy = null;
     public Random random = null;
     public BluePillStore store = null;
     public ArrayList<BluePillAgent> agents = null;
-    
+
     BluePillAgentThread(int agentproc_id, int start_agent_id, int num_agents, BluePillStore store, String address, int port) {
         LOG.info(String.format("Creating agent thread: %d", agentproc_id));
                 
@@ -30,11 +30,7 @@ public class BluePillAgentThread implements Runnable {
         this.store = store;
         this.agents = new ArrayList<>();
         
-        JsonObject params = new JsonObject();
-        params.addProperty("agentproc_id", agentproc_id);
-        JsonElement response = this.proxy.call("get_agentproc_seed", params);
-        int seed = response.getAsInt();
-        LOG.info(String.format("Agent thread %d: Got seed: %d", agentproc_id, seed));
+        int seed = this.proxy.get_agentproc_seed(agentproc_id);
         this.random.setSeed(seed);
         
         LOG.info(String.format("Agent thread %d: Creating agents", agentproc_id));
@@ -45,24 +41,20 @@ public class BluePillAgentThread implements Runnable {
         }
         LOG.info(String.format("Agent thread %d: Created %d agents", agentproc_id, this.agents.size()));
     }
-    
+
     @Override
     public void run() {
         JsonObject params;
         JsonElement response;
         Gson gson = new Gson();
-        
+
         while (true) {
-            params = new JsonObject();
-            params.addProperty("agentproc_id", agentproc_id);
-            response = proxy.call("can_we_start_yet", params);
-            int cur_round = response.getAsJsonObject().get("cur_round").getAsInt();
+            int cur_round = this.proxy.can_we_start_yet(agentproc_id);
             if (cur_round == -1) {
                 LOG.info(String.format("Agent thread %d: stopping", agentproc_id));
                 return;
             }
-            LOG.info(String.format("Agent thread %d: starting round %d", agentproc_id, cur_round));
-            
+
             int update_count = 0;
             for (BluePillAgent agent: agents) {
                 BluePillUpdate update = agent.step(cur_round);
@@ -71,11 +63,7 @@ public class BluePillAgentThread implements Runnable {
                 JsonArray updates = new JsonArray();
                 updates.add(update_json);
                 
-                params = new JsonObject();
-                params.addProperty("agentproc_id", agentproc_id);      
-                params.add("events", updates);
-                proxy.call("register_events", params);
-                
+                this.proxy.register_events(agentproc_id, updates);
                 update_count += 1;
             }
             LOG.info(String.format("Agent thread %d: produced %d events on round %d", agentproc_id, update_count, cur_round));
