@@ -6,7 +6,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.sun.tools.sjavac.Log;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -140,7 +139,7 @@ public class RPCProxy
         params.add("events", events);
         this.call("register_events", params);
 
-        Log.info(String.format("Agent %d, sent %d events", agentproc_id, events.size()));
+        LOG.info(String.format("Agent %d, sent %d events", agentproc_id, events.size()));
     }
 
     public Pair<String, JsonArray> get_events(int storeproc_id) {
